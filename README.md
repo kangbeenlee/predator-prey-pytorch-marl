@@ -14,8 +14,13 @@ Python Module Requirements
 How to use
 -----
 
-* All below commands for endless3 scenario with 2 predators & 1 prey.   
-* Mixing network (e.g. VDN, QMIX, QTRAN) and penalty can be changed.   
+### Details
+
+- All below commands for endless3 scenario with 2 predators & 1 prey.
+- Mixing network (e.g. VDN, QMIX, QTRAN) and penalty can be changed.
+- More higher penalty, More non-monotonic environment becomes.   
+
+### Commands
 
 * **VDN** with penalty 0.0
     ```bash
