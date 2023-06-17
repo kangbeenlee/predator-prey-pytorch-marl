@@ -10,7 +10,7 @@ class VdnMixingNetwork(nn.Module):
         super(VdnMixingNetwork, self).__init__()
 
     def forward(self, q):
-        return torch.sum(q, dim=-1, keepdim=True)  # (batch_size, 1)
+        return torch.sum(q, dim=-1, keepdim=True)  # (batch_size, max_episode_len, 1)
 
 class QmixMixingNetwork(nn.Module):
     def __init__(self, args):
@@ -33,8 +33,10 @@ class QmixMixingNetwork(nn.Module):
                                       nn.Linear(self.mixing_hidden_dim, 1))
 
     def forward(self, q, s):
-        q = q.view(-1, 1, self.N)  # q.shape(batch_size, max_episode_len, N)
-        s = s.reshape(-1, self.state_dim)  # s.shape(batch_size, max_episode_len, state_dim)
+        # q.shape=(batch_size, max_episode_len, N)
+        # s.shape=(batch_size, max_episode_len,state_dim)
+        q = q.view(-1, 1, self.N)  # q.shape=(batch_size * max_episode_len, 1, N)
+        s = s.reshape(-1, self.state_dim)  # s.shape=(batch_size * max_episode_len, state_dim)
 
         w1 = torch.abs(self.hyper_w1(s))  # (batch_size * max_episode_len, N * mixing_hidden_dim)
         b1 = self.hyper_b1(s)  # (batch_size * max_episode_len, mixing_hidden_dim)
