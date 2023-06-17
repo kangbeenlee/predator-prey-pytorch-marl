@@ -99,7 +99,8 @@ def main():
     parser.add_argument("--min_epsilon", type=float, default=0.05, help="Minimum epsilon")
     parser.add_argument("--epsilon_decay_steps", type=int, default=3000000, help="Number of steps over which epsilon is annealed to the final value")
     parser.add_argument("--memory_size", type=int, default=10000, help="Replay memory size")
-    parser.add_argument("--rollout_steps", type=int, default=20, help="Rollout steps for DRQN random update")
+    parser.add_argument("--use_random_update", action="store_true", help="Use random update")
+    parser.add_argument('--rollout_steps', default=20, type=int, help='Rollout steps for random update')
     parser.add_argument("--df", type=float, default=0.99, help="Discount factor")
     parser.add_argument("--use_hard_update", action="store_true", help="Use hard target network update")
     parser.add_argument("--target_update_period", type=int, default=10000, help="Target network update period")
@@ -130,7 +131,7 @@ def main():
 
     # Print all set parameters
     agent_setting = "agentnetwork_" + args.agent_network + "_mixingnetwork_" + args.mixing_network + "_lr_" + str(args.lr) + "_batchsize_" + str(args.batch_size) \
-                    + "_last_action_" + str(args.add_last_action) + "_agent_id_" + str(args.add_agent_id)
+                    + "_last_action_" + str(args.add_last_action) + "_agent_id_" + str(args.add_agent_id) + "_randomupdate_" + str(args.use_random_update)
     env_setting = "scenario_" + args.scenario + "_mapsize_" + str(args.map_size) + "_penalty_" + str(args.penalty)
     file_name = "n_" + str(args.n_predator) + "_" + agent_setting + "_" + env_setting
     print(">>> Setting:", file_name)
