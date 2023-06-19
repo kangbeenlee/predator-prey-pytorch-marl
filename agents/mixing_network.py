@@ -17,7 +17,7 @@ class QmixMixingNetwork(nn.Module):
         super(QmixMixingNetwork, self).__init__()
         self.N = args.n_predator
         self.batch_size = args.batch_size
-        self.state_dim = 2 * (args.n_predator + args.n_prey)
+        self.state_dim = args.state_dim
         self.mixing_hidden_dim = args.mixing_hidden_dim
         """
         w1:(N, mixing_hidden_dim)
@@ -59,10 +59,11 @@ class QmixMixingNetwork(nn.Module):
 class QtranBaseMixingNetwork(nn.Module):
     def __init__(self, args):
         super(QtranBaseMixingNetwork, self).__init__()
-        self.state_dim = 2 * (args.n_predator + args.n_prey)
-        self.agent_profile = self.env.get_agent_profile()
-        self.action_dim = self.agent_profile["predator"]["act_dim"]
-        self.action_encoding_dim = self.action_dim * 2
+        self.N = args.n_predator
+        self.batch_size = args.batch_size
+        self.action_dim = args.action_dim
+        self.hidden_dim = args.rnn_hidden_dim
+        self.action_encoding_dim = self.action_dim + self.hidden_dim
         self.mixing_hidden_dim = args.mixing_hidden_dim
 
         self.joint_action_input_encoder = nn.Sequential(nn.Linear(self.action_encoding_dim, self.action_encoding_dim),
@@ -73,74 +74,26 @@ class QtranBaseMixingNetwork(nn.Module):
                                                         nn.Linear(self.mixing_hidden_dim, self.mixing_hidden_dim),
                                                         nn.ReLU(),
                                                         nn.Linear(self.mixing_hidden_dim, 1))
-        self.state_value_network = nn.Sequential(nn.Linear(1, self.mixing_hidden_dim),
+        self.state_value_network = nn.Sequential(nn.Linear(self.hidden_dim, self.mixing_hidden_dim),
                                                  nn.ReLU(),
                                                  nn.Linear(self.mixing_hidden_dim, 1))
 
     # def forward(self, batch, hidden_states, actions=None):
-    def forward(self, onehot_a_n, hidden_q_n, hidden_v_n):
-        # s.shape=[batch_size, state_dim]
-        # onehot_a_n.shape=[batch_size, N, action_dim]
-        # hidden_q_n.shape=[batch_size, N, action_dim]
-        # hidden_v_n.shape=[batch_size, N, 1]
+    def forward(self, hidden_n, onehot_a_n):
+        # hidden_n.shape=(batch_size,max_episode_len,N,hidden_dim)
+        # onehot_a_n.shape(batch_size,max_episode_len,N,action_dim)
+        max_episode_len = hidden_n.shape[1]
         
-        encoded_joint_action_input = torch.cat([hidden_q_n, onehot_a_n], dim=-1) # encoded_joint_action_input.shape=[batch_size, N, action_dim * 2]
-        encoded_joint_action_input = self.joint_action_input_encoder(encoded_joint_action_input) # encoded_joint_action_input.shape=[batch_size, N, action_dim * 2]
+        hidden_n = hidden_n.reshape(self.batch_size*max_episode_len, self.N, -1) # hidden_n.shape=(batch_size*max_episode_len, N, hidden_dim)
+        onehot_a_n = onehot_a_n.reshape(self.batch_size*max_episode_len, self.N, -1) # onehot_a_n.shape=(batch_size*max_episode_len, N, action_dim)
         
-        input_q = encoded_joint_action_input.sum(dim=1) # agent_state_action_encoding.shape=[batch_size, action_dim * 2]
-        input_v = hidden_v_n.sum(dim=1) # agent_state_action_encoding.shape=[batch_size, 1]
-
-        joint_q = self.joint_action_value_network(input_q)
-        joint_v = self.state_value_network(input_v)
-
-        return joint_q, joint_v
-    
-# class QtranAltMixingNetwork(nn.Module):
-#     def __init__(self, args):
-#         super(QtranAltMixingNetwork, self).__init__()
-#         self.N = args.n_predator
-#         self.state_dim = 2 * (args.n_predator + args.n_prey)
-#         # self.agent_profile = self.env.get_agent_profile()
-#         # self.action_dim = self.agent_profile["predator"]["act_dim"]
-#         self.mixing_hidden_dim = args.mixing_hidden_dim
-#         # self.action_encoding_dim = self.action_dim * 2        
+        joint_action_input = torch.cat([hidden_n, onehot_a_n], dim=-1) # joint_action_input.shape=(batch_size*max_episode_len, N, hidden_dim+action_dim)
+        joint_action_input = self.joint_action_input_encoder(joint_action_input) # joint_action_input.shape=(batch_size*max_episode_len, N, hidden_dim+action_dim)
         
-#         self.args = args
+        input_q = joint_action_input.sum(dim=1) # input_q.shape=(batch_size*max_episode_len, hidden_dim+action_dim)
+        input_v = hidden_n.sum(dim=1) # input_v.shape=(batch_size*max_episode_len, hidden_dim)
 
+        q_joint = self.joint_action_value_network(input_q).view(self.batch_size, -1, 1)
+        v_joint = self.state_value_network(input_v).view(self.batch_size, -1, 1)
 
-#         # Q(s,-,u-i)
-#         # Q takes [state, u-i, i] as input
-#         joint_q_input_dim = self.state_dim + (self.N * self.action_dim) + self.N
-
-#         self.joint_action_value_network = nn.Sequential(nn.Linear(joint_q_input_dim, self.mixing_hidden_dim),
-#                                                         nn.ReLU(),
-#                                                         nn.Linear(self.mixing_hidden_dim, self.mixing_hidden_dim),
-#                                                         nn.ReLU(),
-#                                                         nn.Linear(self.mixing_hidden_dim, self.action_dim))
-#         self.state_value_network = nn.Sequential(nn.Linear(self.state_dim, self.mixing_hidden_dim),
-#                                                  nn.ReLU(),
-#                                                  nn.Linear(self.mixing_hidden_dim, 1))
-
-#     def forward(self, batch, masked_actions=None):
-#         bs = batch.batch_size
-#         ts = batch.max_seq_length
-#         # Repeat each state n_agents times
-#         repeated_states = batch["state"].repeat(1, 1, self.N).view(-1, self.state_dim)
-
-#         if masked_actions is None:
-#             actions = batch["actions_onehot"].repeat(1, 1, self.N, 1)
-#             agent_mask = (1 - torch.eye(self.N, device=batch.device))
-#             agent_mask = agent_mask.view(-1, 1).repeat(1, self.action_dim)#.view(self.N, -1)
-#             masked_actions = actions * agent_mask.unsqueeze(0).unsqueeze(0)
-#             masked_actions = masked_actions.view(-1, self.N * self.action_dim)
-
-#         agent_ids = torch.eye(self.N, device=batch.device).unsqueeze(0).unsqueeze(0).repeat(bs, ts, 1, 1).view(-1, self.N)
-
-#         inputs = torch.cat([repeated_states, masked_actions, agent_ids], dim=1)
-
-#         joint_q = self.joint_action_value_network(inputs)
-
-#         states = batch["state"].repeat(1,1,self.N).view(-1, self.state_dim)
-#         joint_v = self.state_value_network(states)
-
-#         return joint_q, joint_v
+        return q_joint, v_joint
