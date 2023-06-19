@@ -4,11 +4,11 @@ import torch
 
 
 class EpisodeReplayBuffer:
-    def __init__(self, args, obs_dim, state_dim, action_dim):
+    def __init__(self, args):
         self.N = args.n_predator
-        self.obs_dim = obs_dim
-        self.state_dim = state_dim
-        self.action_dim = action_dim
+        self.obs_dim = args.obs_dim
+        self.state_dim = args.state_dim
+        self.action_dim = args.action_dim
         self.episode_limit = args.max_step
         self.buffer_size = args.memory_size
         self.batch_size = args.batch_size
@@ -96,20 +96,6 @@ class EpisodeReplayBuffer:
                     mini_batch[key] = torch.tensor(self.buffer[key][index, :max_episode_len], dtype=torch.float32)
 
             return mini_batch, max_episode_len
-
-    # def sample(self):
-    #     index = np.random.choice(self.current_size, size=self.batch_size, replace=False)
-    #     max_episode_len = int(np.max(self.episode_len[index]))
-    #     mini_batch = {}
-    #     for key in self.buffer.keys():
-    #         if key == 'obs_n' or key == 's' or key == 'last_onehot_a_n':
-    #             mini_batch[key] = torch.tensor(self.buffer[key][index, :max_episode_len + 1], dtype=torch.float32)
-    #         elif key == 'a_n':
-    #             mini_batch[key] = torch.tensor(self.buffer[key][index, :max_episode_len], dtype=torch.int64)
-    #         else:
-    #             mini_batch[key] = torch.tensor(self.buffer[key][index, :max_episode_len], dtype=torch.float32)
-
-    #     return mini_batch, max_episode_len
 
     def __len__(self):
         return self.current_size

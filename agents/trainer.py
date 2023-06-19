@@ -25,15 +25,13 @@ class Trainer(object):
         self.eval = Evaluation()
         self.n_predator = args.n_predator
         self.n_prey = args.n_prey
-        self.agent_profile = env.get_agent_profile()
-        self.agent_precedence = env.agent_precedence # not used
-        self.obs_dim = self.agent_profile["predator"]["obs_dim"][0]
-        self.state_dim = 2 * (self.n_predator + self.n_prey)
-        self.action_dim = self.agent_profile["predator"]["act_dim"]
-        self.replay_buffer = EpisodeReplayBuffer(args, self.obs_dim, self.state_dim, self.action_dim)
+        self.obs_dim = args.obs_dim
+        self.state_dim = args.state_dim
+        self.action_dim = args.action_dim
+        self.replay_buffer = EpisodeReplayBuffer(args)
 
         # Predator & Prey agents
-        self.n_predator_agent = MultiAgent(args, self.action_dim, self.obs_dim)
+        self.n_predator_agent = MultiAgent(args)
         self.prey_agent = AcAgent(args, action_dim=5)
 
         # Exploration parameters
