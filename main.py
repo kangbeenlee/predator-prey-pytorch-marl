@@ -143,6 +143,13 @@ def main():
 
     # Load environment
     env = make_env(args.scenario, args)
+    
+    # Add environment information
+    agent_profile = env.get_agent_profile()
+    args.obs_dim = agent_profile["predator"]["obs_dim"][0]
+    args.state_dim = 2 * (args.n_predator + args.n_prey)
+    args.action_dim = agent_profile["predator"]["act_dim"]
+    
     # Load trainer
     trainer = Trainer(args, env)
 
