@@ -7,8 +7,8 @@ Predator-prey environment in this repository is modified version of the well-kno
 Python Module Requirements
 -----
 
-* gym >= 0.21.0
-* tensorboard >= 2.12.3
+* gym >= 0.11.0
+* tensorboard >= 2.13.0
 
 
 How to use
@@ -18,18 +18,23 @@ How to use
 
 - All below commands for endless3 scenario with 2 predators & 1 prey.
 - Mixing network (e.g. VDN, QMIX, QTRAN) and penalty can be changed.
-- More higher penalty, More non-monotonic environment becomes.   
+- More higher penalty, more non-monotonic environment becomes.   
 
 ### Commands
 
 * **VDN** with penalty 0.0
     ```bash
-    python main.py --scenario endless3 --n_predator 2 --n_prey1 0 --n_prey2 1 --n_prey 1 --map_size 5 --train --training_step 3000000 --epsilon_decay_steps 1000000 --testing_step 10000 --max_step 100 --memory_size 300000 --df 0.99 --eval_episode 100 --agent_network rnn --mixing_network vdn --lr 5e-4 --seed 0 --penalty 0 --add_last_action --add_agent_id
+    python main.py --scenario endless3 --n_predator 2 --n_prey1 0 --n_prey2 1 --n_prey 1 --map_size 5 --train --training_step 3000000 --epsilon_decay_steps 1000000 --testing_step 10000 --max_step 100 --memory_size 300000 --df 0.99 --eval_episode 100 --agent_network rnn --mixing_network vdn --lr 5e-4 --seed 0 --penalty 0 --add_last_action --add_agent_id --use_random_update
     ```
 
 * **QMIX** with penalty 0.0
     ```bash
-    python main.py --scenario endless3 --n_predator 2 --n_prey1 0 --n_prey2 1 --n_prey 1 --map_size 5 --train --training_step 3000000 --epsilon_decay_steps 1000000 --testing_step 10000 --max_step 100 --memory_size 300000 --df 0.99 --eval_episode 100 --agent_network rnn --mixing_network qmix --lr 5e-4 --seed 0 --penalty 0 --add_last_action --add_agent_id
+    python main.py --scenario endless3 --n_predator 2 --n_prey1 0 --n_prey2 1 --n_prey 1 --map_size 5 --train --training_step 3000000 --epsilon_decay_steps 1000000 --testing_step 10000 --max_step 100 --memory_size 300000 --df 0.99 --eval_episode 100 --agent_network rnn --mixing_network qmix --lr 5e-4 --seed 0 --penalty 0 --add_last_action --add_agent_id --use_random_update
+    ```
+
+* **QTRAN-base** with penalty 0.0
+    ```base
+    python main.py --scenario endless3 --n_predator 2 --n_prey1 0 --n_prey2 1 --n_prey 1 --map_size 5 --train --training_step 3000000 --epsilon_decay_steps 1000000 --testing_step 10000 --max_step 100 --memory_size 300000 --df 0.99 --eval_episode 100 --agent_network rnn --mixing_network qtran-base --lr 5e-4 --seed 0 --penalty 0 --add_last_action --add_agent_id --use_random_update
     ```
 
 
