@@ -65,7 +65,7 @@ def main():
     parser.add_argument("--render_every", type=float, default=1000, help="Render the nth episode")
 
     # Penalty
-    parser.add_argument("--penalty", type=int, default=1, help="reward penalty")
+    parser.add_argument("--penalty", type=int, default=0, help="reward penalty (e.g. 5 and 10 mean 0.5 and 1.0 penalties individualy")
     
     
     ## Agent    
@@ -75,6 +75,10 @@ def main():
     parser.add_argument("--add_agent_id", action="store_true", help="Use agent id as agent network input")
     parser.add_argument('--mlp_hidden_dim', type=int, default=64, help='DQN agent hidden dimension')
     parser.add_argument('--rnn_hidden_dim', type=int, default=64, help='RNN agent hidden dimension')
+
+    # QTRAN-base parameters
+    parser.add_argument("--lambda_opt", type=float, default=1.0, help="Weight constant for optimal action loss function")
+    parser.add_argument("--lambda_nopt", type=float, default=1.0, help="Weight constant for non-optimal action loss function")
 
     # Mixing network parameters
     parser.add_argument("--mixing_network", type=str, default="vdn", help="Mixing network type")
@@ -86,7 +90,8 @@ def main():
     parser.add_argument("--gamma", type=float, default=0.5, help="Multiplicative factor of learning rate decay")
     parser.add_argument("--use_grad_clip", action="store_true", help="Use gradient clipping")
     parser.add_argument('--max_grad_norm', type=int, default=10, help='Maxinum gradient norm')
-
+    
+    # Training parameters
     parser.add_argument("--batch_size", type=int, default=32, help="Minibatch size")
     parser.add_argument("--training_start", type=int, default=100, help="Number of steps before training [batch_size * pre_step]")
     parser.add_argument("--max_step", type=int, default=200, help="Maximum time step per episode")
@@ -106,11 +111,11 @@ def main():
     parser.add_argument("--target_update_period", type=int, default=10000, help="Target network update period")
     parser.add_argument("--tau", type=float, default=0.005, help="Soft target update parameter")
 
+    # Train & Test parameters
     parser.add_argument("--train", action="store_true", help="Training or testing")
-    parser.add_argument("--qtrace", action="store_true", help="Use q trace")
     parser.add_argument("--keyboard_input", action="store_true", help="Keyboard input test")
-    parser.add_argument("--use_action_in_critic", action="store_true", help="Use guided samples")
 
+    # Trained model parameters
     parser.add_argument("--save_period", type=int, default=100000, help="Target network update period")
     parser.add_argument("--load_nn", action="store_true", help="Load nn from file or not")
     parser.add_argument("--nn_file", type=str, default="", help="The name of file for loading")
