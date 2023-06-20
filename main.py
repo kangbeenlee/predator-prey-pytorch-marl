@@ -75,6 +75,7 @@ def main():
     parser.add_argument("--add_agent_id", action="store_true", help="Use agent id as agent network input")
     parser.add_argument('--mlp_hidden_dim', type=int, default=64, help='DQN agent hidden dimension')
     parser.add_argument('--rnn_hidden_dim', type=int, default=64, help='RNN agent hidden dimension')
+    parser.add_argument("--use_orthogonal_init", action="store_true", help="Use orthogonal initialization")
 
     # QTRAN-base parameters
     parser.add_argument("--lambda_opt", type=float, default=1.0, help="Weight constant for optimal action loss function")

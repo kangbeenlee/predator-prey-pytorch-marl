@@ -62,7 +62,12 @@ class Trainer(object):
             self.canvas.setup()
 
         # Tensorboard
-        self.writer = SummaryWriter(log_dir="runs/{}_penalty_{}_{}_{}/{}_{}/".format(args.scenario, args.penalty, args.n_predator, args.n_prey, args.mixing_network, args.agent_network))
+        path = "runs/{}_penalty_{}_{}_{}/{}_{}".format(args.scenario, args.penalty, args.n_predator, args.n_prey, args.mixing_network, args.agent_network)
+        if not args.use_random_update:
+            path += "_sequential"
+        if args.use_orthogonal_init:
+            path += "_orthogonal"
+        self.writer = SummaryWriter(log_dir=path)
 
     def learn(self):
         step = 0

@@ -29,12 +29,26 @@ class DQN(nn.Module):
         q = self.fc3(x)
         return q
 
+# orthogonal initialization
+def orthogonal_init(layer, gain=1.0):
+    for name, param in layer.named_parameters():
+        if 'bias' in name:
+            nn.init.constant_(param, 0)
+        elif 'weight' in name:
+            nn.init.orthogonal_(param, gain=gain)
+
 class DRQN(nn.Module):
     def __init__(self, args, input_dim, action_dim):
         super(DRQN, self).__init__()
         self.fc1 = nn.Linear(input_dim, args.rnn_hidden_dim)
         self.rnn = nn.GRUCell(args.rnn_hidden_dim, args.rnn_hidden_dim)
         self.fc2 = nn.Linear(args.rnn_hidden_dim, action_dim)
+
+        if args.use_orthogonal_init:
+            print("------ Use orthogonal initialization ------")
+            orthogonal_init(self.fc1)
+            orthogonal_init(self.rnn)
+            orthogonal_init(self.fc2)
 
     def forward(self, x, h):
         x = F.relu(self.fc1(x))
