@@ -49,6 +49,10 @@ How to use
 
 Experiment Results
 -----
+* Score curve in order of monotonic environment and non-monotonic environment.
+    <p align="left">
+        <img src="./results/monotonic.svg" width="300">
+    </p>
 
 
 Reference
