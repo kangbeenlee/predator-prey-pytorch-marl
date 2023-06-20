@@ -124,9 +124,7 @@ def main():
     args = parser.parse_args()
 
     # Add args.device
-    args.device = torch.device('cpu')
-    if torch.cuda.is_available():
-        args.device = torch.device('cuda')
+    args.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("------ Use {} ------".format(args.device))
 
     # Set random seed
