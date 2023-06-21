@@ -49,11 +49,19 @@ How to use
 
 Experiment Results
 -----
-* Score curve in order of zero-penalty, 0.5 penalty, and 1.0 penalty.
+
+- Score curves of DQN agent and DRQN agent. DRQN agent overwhelms DQN agent
     <p align="left">
-        <img src="./results/monotonic.svg" width="300">
-        <img src="./results/penalty10.svg" width="300">
+        <img src="./results/vdn_mlp_rnn.svg" width="250">
     </p>
+
+- Score curves in order of zero-penalty, 0.5 penalty, and 1.0 penalty.
+    <p align="left">
+        <img src="./results/monotonic.svg" width="250">
+        <img src="./results/penalty10.svg" width="250">
+        <img src="./results/penalty10.svg" width="250">
+    </p>
+
 
 Reference
 -----
