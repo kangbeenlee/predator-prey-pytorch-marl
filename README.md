@@ -49,11 +49,11 @@ How to use
 
 Experiment Results
 -----
-* Score curve in order of monotonic environment and non-monotonic environment.
+* Score curve in order of zero-penalty, 0.5 penalty, and 1.0 penalty.
     <p align="left">
         <img src="./results/monotonic.svg" width="300">
+        <img src="./results/penalty10.svg" width="300">
     </p>
-
 
 Reference
 -----
