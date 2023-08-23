@@ -58,7 +58,7 @@ Experiment Results
 - Score curves in order of zero-penalty, 0.5 penalty, and 1.0 penalty.
     <p align="left">
         <img src="./results/monotonic.svg" width="250">
-        <img src="./results/penalty10.svg" width="250">
+        <img src="./results/penalty5.svg" width="250">
         <img src="./results/penalty10.svg" width="250">
     </p>
 
